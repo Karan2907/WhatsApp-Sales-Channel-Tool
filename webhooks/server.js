@@ -20,6 +20,23 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'WhatsApp Sales Channel Tool for Resort Owners API',
+    version: '1.0.0',
+    description: 'This is the webhook server for the WhatsApp Sales Channel Tool. Please use the webhook endpoints to integrate with your booking platform.',
+    endpoints: {
+      'Booking Started': 'POST /webhook/booking-started',
+      'Booking Abandoned': 'POST /webhook/booking-abandoned',
+      'Reservation Confirmed': 'POST /webhook/reservation-confirmed',
+      'Guest Checked In': 'POST /webhook/guest-checked-in',
+      'Health Check': 'GET /health'
+    },
+    documentation: 'See README.md and docs/ directory for detailed setup instructions'
+  });
+});
+
 // Webhook endpoint for booking started
 app.post('/webhook/booking-started', (req, res) => {
   try {
