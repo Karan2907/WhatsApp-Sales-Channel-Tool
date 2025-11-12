@@ -46,20 +46,9 @@ app.get('/settings', (req, res) => {
     <html>
     <head>
         <title>WhatsApp Sales Channel Settings</title>
-        <style>
-            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-            .form-group { margin-bottom: 15px; }
-            label { display: block; margin-bottom: 5px; font-weight: bold; }
-            input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-            button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-            button:hover { background-color: #0056b3; }
-            .success { color: green; }
-            .error { color: red; }
-            h1 { color: #333; }
-            .provider-fields { display: none; }
-        </style>
+        <link rel="stylesheet" href="/settings.css">
     </head>
-    <body>
+    <body data-provider="${config.whatsapp.provider || ''}">
         <h1>WhatsApp Sales Channel Settings</h1>
         <form id="settingsForm">
             <div class="form-group">
@@ -135,80 +124,7 @@ app.get('/settings', (req, res) => {
 
         <div id="message"></div>
 
-        <script>
-            // Show/hide provider-specific fields
-            document.getElementById('provider').addEventListener('change', function() {
-                // Hide all provider fields
-                document.querySelectorAll('.provider-fields').forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                // Show selected provider fields
-                const selectedProvider = this.value;
-                if (selectedProvider) {
-                    document.getElementById(selectedProvider + '-fields').style.display = 'block';
-                }
-            });
-
-            // Set initial state based on current provider
-            const currentProvider = "${config.whatsapp.provider || ''}";
-            if (currentProvider) {
-                document.getElementById('provider').value = currentProvider;
-                document.getElementById(currentProvider + '-fields').style.display = 'block';
-            }
-
-            // Handle form submission
-            document.getElementById('settingsForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this);
-                const provider = formData.get('provider');
-                
-                // Build settings object
-                const settings = {
-                    whatsapp: {
-                        provider: provider
-                    },
-                    brand: {
-                        name: formData.get('brandName'),
-                        tone: formData.get('brandTone')
-                    }
-                };
-                
-                // Add provider-specific fields
-                if (provider === 'whatsapp-cloud-api') {
-                    settings.whatsapp.apiEndpoint = 'https://graph.facebook.com/v20.0';
-                    settings.whatsapp.accessToken = formData.get('accessToken');
-                    settings.whatsapp.phoneNumberId = formData.get('phoneNumberId');
-                    settings.whatsapp.businessAccountId = formData.get('businessAccountId');
-                } else if (provider === 'twilio') {
-                    settings.whatsapp.apiEndpoint = 'https://api.twilio.com/2010-04-01/Accounts';
-                    settings.whatsapp.accountSid = formData.get('accountSid');
-                    settings.whatsapp.authToken = formData.get('authToken');
-                    settings.whatsapp.phoneNumber = formData.get('phoneNumber');
-                } else if (provider === 'gupshup') {
-                    settings.whatsapp.apiEndpoint = 'https://api.gupshup.io/sm/api/v1/template/msg';
-                    settings.whatsapp.apiKey = formData.get('apiKey');
-                    settings.whatsapp.appName = formData.get('appName');
-                }
-                
-                // Send settings to server
-                fetch('/api/settings', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(settings)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('message').innerHTML = '<p class="success">' + data.message + '</p>';
-                })
-                .catch(error => {
-                    document.getElementById('message').innerHTML = '<p class="error">Error saving settings: ' + error.message + '</p>';
-                });
-            });
-        </script>
+        <script src="/settings.js"></script>
     </body>
     </html>
   `);
