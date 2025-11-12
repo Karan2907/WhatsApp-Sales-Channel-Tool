@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "Ocean View Suite",
+    "price": 299.99,
+    "benefit": "Stunning ocean views with private balcony and luxury amenities",
+    "url": "https://yourresort.com/suites/ocean-view",
+    "category": "accommodation",
+    "imageUrl": "https://yourresort.com/images/ocean-view-suite.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Tropical Garden Room",
+    "price": 199.99,
+    "benefit": "Peaceful garden views with direct access to resort pools and spas",
+    "url": "https://yourresort.com/rooms/garden-view",
+    "category": "accommodation",
+    "imageUrl": "https://yourresort.com/images/garden-room.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Presidential Suite",
+    "price": 499.99,
+    "benefit": "Luxury suite with panoramic views, private jacuzzi and butler service",
+    "url": "https://yourresort.com/suites/presidential",
+    "category": "accommodation",
+    "imageUrl": "https://yourresort.com/images/presidential-suite.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Beach Front Bungalow",
+    "price": 349.99,
+    "benefit": "Direct beach access with private terrace and outdoor shower",
+    "url": "https://yourresort.com/accommodation/beach-bungalow",
+    "category": "accommodation",
+    "imageUrl": "https://yourresort.com/images/beach-bungalow.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Spa Treatment Package",
+    "price": 149.99,
+    "benefit": "Premium spa treatments including massage, facial and body scrub",
+    "url": "https://yourresort.com/spa/packages",
+    "category": "experience",
+    "imageUrl": "https://yourresort.com/images/spa-package.jpg"
+  }
+]

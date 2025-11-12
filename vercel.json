@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "webhooks/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/webhook/booking-started",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/webhook/booking-abandoned",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/webhook/reservation-confirmed",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/webhook/guest-checked-in",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/health",
+      "dest": "webhooks/server.js"
+    }
+  ]
+}
