@@ -21,22 +21,129 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-// Root endpoint
+// Root endpoint - Landing page
 app.get('/', (req, res) => {
-  res.status(200).json({ 
-    message: 'WhatsApp Sales Channel Tool for Resort Owners API',
-    version: '1.0.0',
-    description: 'This is the webhook server for the WhatsApp Sales Channel Tool. Please use the webhook endpoints to integrate with your booking platform.',
-    endpoints: {
-      'Booking Started': 'POST /webhook/booking-started',
-      'Booking Abandoned': 'POST /webhook/booking-abandoned',
-      'Reservation Confirmed': 'POST /webhook/reservation-confirmed',
-      'Guest Checked In': 'POST /webhook/guest-checked-in',
-      'Health Check': 'GET /health',
-      'Settings': 'GET /settings'
-    },
-    documentation: 'See README.md and docs/ directory for detailed setup instructions'
-  });
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>WhatsApp Sales Channel Tool</title>
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                max-width: 800px; 
+                margin: 0 auto; 
+                padding: 20px; 
+                background-color: #f5f5f5;
+            }
+            .container {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1 { 
+                color: #333; 
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .endpoint {
+                background-color: #f8f9fa;
+                border-left: 4px solid #007bff;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 4px;
+            }
+            .endpoint-title {
+                font-weight: bold;
+                color: #007bff;
+                margin-bottom: 5px;
+            }
+            .endpoint-url {
+                font-family: monospace;
+                background-color: #e9ecef;
+                padding: 2px 6px;
+                border-radius: 3px;
+            }
+            .button {
+                display: inline-block;
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 4px;
+                margin: 10px 5px;
+                font-weight: bold;
+            }
+            .button:hover {
+                background-color: #0056b3;
+            }
+            .center {
+                text-align: center;
+            }
+            .api-info {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>WhatsApp Sales Channel Tool for Resort Owners</h1>
+            
+            <div class="center">
+                <a href="/settings" class="button">Configure Settings</a>
+                <a href="/health" class="button">Health Check</a>
+            </div>
+            
+            <div class="api-info">
+                <h2>API Endpoints</h2>
+                <div class="endpoint">
+                    <div class="endpoint-title">Booking Started</div>
+                    <div class="endpoint-url">POST /webhook/booking-started</div>
+                    <div>Triggered when a guest starts a booking</div>
+                </div>
+                
+                <div class="endpoint">
+                    <div class="endpoint-title">Booking Abandoned</div>
+                    <div class="endpoint-url">POST /webhook/booking-abandoned</div>
+                    <div>Triggered when a guest abandons a booking</div>
+                </div>
+                
+                <div class="endpoint">
+                    <div class="endpoint-title">Reservation Confirmed</div>
+                    <div class="endpoint-url">POST /webhook/reservation-confirmed</div>
+                    <div>Triggered when a reservation is confirmed</div>
+                </div>
+                
+                <div class="endpoint">
+                    <div class="endpoint-title">Guest Checked In</div>
+                    <div class="endpoint-url">POST /webhook/guest-checked-in</div>
+                    <div>Triggered when a guest checks in</div>
+                </div>
+                
+                <div class="endpoint">
+                    <div class="endpoint-title">Health Check</div>
+                    <div class="endpoint-url">GET /health</div>
+                    <div>Check if the service is running</div>
+                </div>
+                
+                <div class="endpoint">
+                    <div class="endpoint-title">Settings</div>
+                    <div class="endpoint-url">GET /settings</div>
+                    <div>Configure WhatsApp provider settings</div>
+                </div>
+            </div>
+            
+            <div class="center" style="margin-top: 30px; color: #666;">
+                <p>Version 1.0.0</p>
+                <p>See README.md and docs/ directory for detailed setup instructions</p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `);
 });
 
 // Settings page endpoint
