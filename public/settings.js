@@ -57,10 +57,16 @@ function handleFormSubmit(e) {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('message').innerHTML = '<p class="success">' + data.message + '</p>';
+        // Safer way to update message content to comply with CSP
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = data.message;
+        messageElement.className = 'success';
     })
     .catch(error => {
-        document.getElementById('message').innerHTML = '<p class="error">Error saving settings: ' + error.message + '</p>';
+        // Safer way to update message content to comply with CSP
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = 'Error saving settings: ' + error.message;
+        messageElement.className = 'error';
     });
 }
 
