@@ -1,55 +1,49 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "webhooks/server.js",
-      "use": "@vercel/node"
-    }
-  ],
   "routes": [
-    {
-      "src": "/webhook/booking-started",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/webhook/booking-abandoned",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/webhook/reservation-confirmed",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/webhook/guest-checked-in",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/health",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/settings",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/api/settings",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/settings.js",
-      "dest": "webhooks/server.js"
-    },
-    {
-      "src": "/settings.css",
-      "dest": "webhooks/server.js"
-    },
     {
       "src": "/dist/(.*)",
       "dest": "/public/dist/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "webhooks/server.js"
+      "src": "/webhook/booking-started",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/webhook/booking-abandoned",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/webhook/reservation-confirmed",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/webhook/guest-checked-in",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/settings",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/api/settings",
+      "dest": "/webhooks/server.js"
+    },
+    {
+      "src": "/settings.js",
+      "dest": "/public/settings.js"
+    },
+    {
+      "src": "/settings.css",
+      "dest": "/public/settings.css"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     }
   ],
   "headers": [
