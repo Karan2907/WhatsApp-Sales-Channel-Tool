@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve static files from public directory
+app.use(express.static('.')); // Serve static files from root directory
 
 // Load configuration
 const fs = require('fs');
@@ -23,7 +23,7 @@ let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 // Root endpoint - Landing page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 // Settings page endpoint
