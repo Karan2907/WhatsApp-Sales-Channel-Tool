@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('.')); // Serve static files from root directory
+app.use(express.static('public')); // Serve static files from public directory
 
 // Load configuration
 const fs = require('fs');
