@@ -44,7 +44,11 @@
       "dest": "webhooks/server.js"
     },
     {
-      "src": "/",
+      "src": "/dist/(.*)",
+      "dest": "/public/dist/$1"
+    },
+    {
+      "src": "/(.*)",
       "dest": "webhooks/server.js"
     }
   ],
