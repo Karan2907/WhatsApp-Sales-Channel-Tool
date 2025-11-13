@@ -70,6 +70,40 @@ function handleFormSubmit(e) {
     });
 }
 
+// Load current settings from server
+function loadCurrentSettings() {
+    fetch('/api/settings')
+        .then(response => response.json())
+        .then(config => {
+            // Populate form fields with current settings
+            document.getElementById('provider').value = config.whatsapp.provider || '';
+            document.getElementById('brandName').value = config.brand.name || '';
+            document.getElementById('brandTone').value = config.brand.tone || 'friendly';
+            
+            // Provider-specific fields
+            if (config.whatsapp.provider === 'whatsapp-cloud-api') {
+                document.getElementById('accessToken').value = config.whatsapp.accessToken || '';
+                document.getElementById('phoneNumberId').value = config.whatsapp.phoneNumberId || '';
+                document.getElementById('businessAccountId').value = config.whatsapp.businessAccountId || '';
+            } else if (config.whatsapp.provider === 'twilio') {
+                document.getElementById('accountSid').value = config.whatsapp.accountSid || '';
+                document.getElementById('authToken').value = config.whatsapp.authToken || '';
+                document.getElementById('phoneNumber').value = config.whatsapp.phoneNumber || '';
+            } else if (config.whatsapp.provider === 'gupshup') {
+                document.getElementById('apiKey').value = config.whatsapp.apiKey || '';
+                document.getElementById('appName').value = config.whatsapp.appName || '';
+            }
+            
+            // Show the appropriate provider fields
+            if (config.whatsapp.provider) {
+                document.getElementById(config.whatsapp.provider + '-fields').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading settings:', error);
+        });
+}
+
 // Set initial state when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     const providerSelect = document.getElementById('provider');
@@ -82,10 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
         settingsForm.addEventListener('submit', handleFormSubmit);
     }
     
-    // Set initial state based on current provider
-    const currentProvider = document.body.dataset.provider || '';
-    if (currentProvider) {
-        providerSelect.value = currentProvider;
-        document.getElementById(currentProvider + '-fields').style.display = 'block';
-    }
+    // Load current settings
+    loadCurrentSettings();
 });

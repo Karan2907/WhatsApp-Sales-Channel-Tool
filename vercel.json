@@ -26,6 +26,49 @@
     {
       "src": "/health",
       "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/settings",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/api/settings",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/settings.js",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/settings.css",
+      "dest": "webhooks/server.js"
+    },
+    {
+      "src": "/",
+      "dest": "webhooks/server.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
   ]
 }

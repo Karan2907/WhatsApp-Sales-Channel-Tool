@@ -1,23 +1,29 @@
 {
   "name": "whatsapp-sales-channel-tool",
   "version": "1.0.0",
-  "description": "Downloadable tool for WhatsApp sales channel automation for resort owners",
-  "main": "app.js",
+  "description": "Desktop application for WhatsApp sales channel automation for resort owners",
+  "main": "main.js",
   "scripts": {
-    "start": "node start.js",
+    "start": "electron .",
     "server": "node webhooks/server.js",
     "setup": "node setup.js",
     "demo": "node test/demo.js",
     "test": "node test/test.js",
     "dev": "nodemon webhooks/server.js",
-    "build": "echo 'No build required for Node.js application'"
+    "build": "node build.js",
+    "package": "node package-app.js",
+    "release": "node release.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "keywords": [
     "whatsapp",
     "sales-channel",
     "resort",
     "automation",
-    "booking"
+    "booking",
+    "desktop",
+    "electron"
   ],
   "author": "WhatsApp Sales Channel Team",
   "license": "MIT",
@@ -26,6 +32,7 @@
     "body-parser": "^1.20.2"
   },
   "devDependencies": {
+    "electron": "^34.0.0",
     "jest": "^29.0.0",
     "nodemon": "^2.0.0"
   },

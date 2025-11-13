@@ -148,93 +148,7 @@ app.get('/', (req, res) => {
 
 // Settings page endpoint
 app.get('/settings', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>WhatsApp Sales Channel Settings</title>
-        <link rel="stylesheet" href="/settings.css">
-    </head>
-    <body data-provider="${config.whatsapp.provider || ''}">
-        <h1>WhatsApp Sales Channel Settings</h1>
-        <form id="settingsForm">
-            <div class="form-group">
-                <label for="provider">WhatsApp Provider:</label>
-                <select id="provider" name="provider">
-                    <option value="">Select Provider</option>
-                    <option value="whatsapp-cloud-api">WhatsApp Business API (Meta)</option>
-                    <option value="twilio">Twilio</option>
-                    <option value="gupshup">Gupshup</option>
-                </select>
-            </div>
-
-            <!-- WhatsApp Business API Fields -->
-            <div id="whatsapp-cloud-api-fields" class="provider-fields">
-                <div class="form-group">
-                    <label for="accessToken">Access Token:</label>
-                    <input type="password" id="accessToken" name="accessToken" value="${config.whatsapp.accessToken || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="phoneNumberId">Phone Number ID:</label>
-                    <input type="text" id="phoneNumberId" name="phoneNumberId" value="${config.whatsapp.phoneNumberId || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="businessAccountId">Business Account ID (optional):</label>
-                    <input type="text" id="businessAccountId" name="businessAccountId" value="${config.whatsapp.businessAccountId || ''}">
-                </div>
-            </div>
-
-            <!-- Twilio Fields -->
-            <div id="twilio-fields" class="provider-fields">
-                <div class="form-group">
-                    <label for="accountSid">Account SID:</label>
-                    <input type="password" id="accountSid" name="accountSid" value="${config.whatsapp.accountSid || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="authToken">Auth Token:</label>
-                    <input type="password" id="authToken" name="authToken" value="${config.whatsapp.authToken || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="phoneNumber">WhatsApp Phone Number:</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" value="${config.whatsapp.phoneNumber || ''}">
-                </div>
-            </div>
-
-            <!-- Gupshup Fields -->
-            <div id="gupshup-fields" class="provider-fields">
-                <div class="form-group">
-                    <label for="apiKey">API Key:</label>
-                    <input type="password" id="apiKey" name="apiKey" value="${config.whatsapp.apiKey || ''}">
-                </div>
-                <div class="form-group">
-                    <label for="appName">App Name:</label>
-                    <input type="text" id="appName" name="appName" value="${config.whatsapp.appName || ''}">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="brandName">Brand Name:</label>
-                <input type="text" id="brandName" name="brandName" value="${config.brand.name || ''}">
-            </div>
-
-            <div class="form-group">
-                <label for="brandTone">Brand Tone:</label>
-                <select id="brandTone" name="brandTone">
-                    <option value="friendly" ${config.brand.tone === 'friendly' ? 'selected' : ''}>Friendly</option>
-                    <option value="premium" ${config.brand.tone === 'premium' ? 'selected' : ''}>Premium</option>
-                    <option value="relaxed" ${config.brand.tone === 'relaxed' ? 'selected' : ''}>Relaxed</option>
-                </select>
-            </div>
-
-            <button type="submit">Save Settings</button>
-        </form>
-
-        <div id="message"></div>
-
-        <script src="/settings.js"></script>
-    </body>
-    </html>
-  `);
+  res.sendFile(path.join(__dirname, '../public/settings.html'));
 });
 
 // API endpoint to get current settings
@@ -347,9 +261,17 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Webhook server running on port ${PORT}`);
-});
+// Start the server only if not running as Electron child process
+if (!process.send) {
+  app.listen(PORT, () => {
+    console.log(`Webhook server running on port ${PORT}`);
+  });
+} else {
+  // If running as Electron child process, send message to parent
+  app.listen(PORT, () => {
+    console.log(`Webhook server running on port ${PORT}`);
+    process.send({ status: 'running', port: PORT });
+  });
+}
 
 module.exports = app;

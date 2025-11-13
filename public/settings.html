@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsApp Sales Channel Tool - Settings</title>
+    <link rel="stylesheet" href="settings.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            margin: 0;
+        }
+        .app-info {
+            background-color: #e9f7fe;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .app-info h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-running {
+            background-color: #28a745;
+        }
+        .status-stopped {
+            background-color: #dc3545;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .server-status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status-ok {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>WhatsApp Sales Channel Tool</h1>
+            <p>Desktop Application for Resort Owners</p>
+        </div>
+        
+        <div class="app-info">
+            <h3>Application Information</h3>
+            <p id="app-name">Loading...</p>
+            <p id="app-version">Version: Loading...</p>
+            <p>Server Port: <span id="server-port">3000</span></p>
+        </div>
+        
+        <div class="server-status status-ok" id="server-status">
+            <span class="status-indicator status-running"></span>
+            Server is running
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="settings">Settings</div>
+            <div class="tab" data-tab="webhooks">Webhook Endpoints</div>
+            <div class="tab" data-tab="about">About</div>
+        </div>
+        
+        <div class="tab-content active" id="settings-tab">
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="provider">WhatsApp Provider:</label>
+                    <select id="provider" name="provider">
+                        <option value="">Select Provider</option>
+                        <option value="whatsapp-cloud-api">WhatsApp Business API (Meta)</option>
+                        <option value="twilio">Twilio</option>
+                        <option value="gupshup">Gupshup</option>
+                    </select>
+                </div>
+
+                <!-- WhatsApp Business API Fields -->
+                <div id="whatsapp-cloud-api-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="accessToken">Access Token:</label>
+                        <input type="password" id="accessToken" name="accessToken" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumberId">Phone Number ID:</label>
+                        <input type="text" id="phoneNumberId" name="phoneNumberId" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="businessAccountId">Business Account ID (optional):</label>
+                        <input type="text" id="businessAccountId" name="businessAccountId" value="">
+                    </div>
+                </div>
+
+                <!-- Twilio Fields -->
+                <div id="twilio-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="accountSid">Account SID:</label>
+                        <input type="password" id="accountSid" name="accountSid" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="authToken">Auth Token:</label>
+                        <input type="password" id="authToken" name="authToken" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">WhatsApp Phone Number:</label>
+                        <input type="text" id="phoneNumber" name="phoneNumber" value="">
+                    </div>
+                </div>
+
+                <!-- Gupshup Fields -->
+                <div id="gupshup-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="apiKey">API Key:</label>
+                        <input type="password" id="apiKey" name="apiKey" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="appName">App Name:</label>
+                        <input type="text" id="appName" name="appName" value="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandName">Brand Name:</label>
+                    <input type="text" id="brandName" name="brandName" value="">
+                </div>
+
+                <div class="form-group">
+                    <label for="brandTone">Brand Tone:</label>
+                    <select id="brandTone" name="brandTone">
+                        <option value="friendly">Friendly</option>
+                        <option value="premium">Premium</option>
+                        <option value="relaxed">Relaxed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
+        
+        <div class="tab-content" id="webhooks-tab">
+            <h3>Webhook Endpoints</h3>
+            <p>Configure your booking platform to send webhooks to these endpoints:</p>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Booking Started</div>
+                <div class="endpoint-url" id="booking-started-url">http://localhost:3000/webhook/booking-started</div>
+                <div>Triggered when a guest starts a booking</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Booking Abandoned</div>
+                <div class="endpoint-url" id="booking-abandoned-url">http://localhost:3000/webhook/booking-abandoned</div>
+                <div>Triggered when a guest abandons a booking</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Reservation Confirmed</div>
+                <div class="endpoint-url" id="reservation-confirmed-url">http://localhost:3000/webhook/reservation-confirmed</div>
+                <div>Triggered when a reservation is confirmed</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Guest Checked In</div>
+                <div class="endpoint-url" id="guest-checked-in-url">http://localhost:3000/webhook/guest-checked-in</div>
+                <div>Triggered when a guest checks in</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Health Check</div>
+                <div class="endpoint-url" id="health-check-url">http://localhost:3000/health</div>
+                <div>Check if the service is running</div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="about-tab">
+            <h3>About WhatsApp Sales Channel Tool</h3>
+            <p>This desktop application transforms WhatsApp into a powerful sales channel for your resort business through automated messaging flows.</p>
+            
+            <h4>Features</h4>
+            <ul>
+                <li>Welcome & Qualification Flow - Automated welcome message with intent qualification</li>
+                <li>Accommodation Showcase Flow - Curated suite and room recommendations based on guest interest</li>
+                <li>Booking Abandonment Recovery - Automated reminders for incomplete bookings</li>
+                <li>Reservation Management - Automatic booking confirmations and check-in updates</li>
+                <li>Post-Stay Engagement - Review requests and strategic upsell opportunities</li>
+                <li>Multi-Provider Support - Works with WhatsApp Business API, Twilio, and Gupshup</li>
+            </ul>
+            
+            <h4>Support</h4>
+            <p>For issues and questions, please refer to the documentation in the docs/ directory or contact support.</p>
+        </div>
+        
+        <div class="button-group">
+            <button id="restart-server" class="btn btn-warning">Restart Server</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script src="settings.js"></script>
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+        
+        // Load app info when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const appInfo = await window.electronAPI.getAppInfo();
+                document.getElementById('app-name').textContent = appInfo.name;
+                document.getElementById('app-version').textContent = `Version: ${appInfo.version}`;
+                document.getElementById('server-port').textContent = appInfo.serverPort;
+                
+                // Update webhook URLs with the correct port
+                const port = appInfo.serverPort;
+                document.getElementById('booking-started-url').textContent = `http://localhost:${port}/webhook/booking-started`;
+                document.getElementById('booking-abandoned-url').textContent = `http://localhost:${port}/webhook/booking-abandoned`;
+                document.getElementById('reservation-confirmed-url').textContent = `http://localhost:${port}/webhook/reservation-confirmed`;
+                document.getElementById('guest-checked-in-url').textContent = `http://localhost:${port}/webhook/guest-checked-in`;
+                document.getElementById('health-check-url').textContent = `http://localhost:${port}/health`;
+            } catch (error) {
+                console.error('Error loading app info:', error);
+            }
+        });
+        
+        // Restart server button
+        document.getElementById('restart-server').addEventListener('click', async function() {
+            try {
+                const result = await window.electronAPI.restartServer();
+                showMessage(result.message, 'success');
+            } catch (error) {
+                showMessage('Error restarting server: ' + error.message, 'error');
+            }
+        });
+        
+        // Listen for server status updates
+        window.electronAPI.onServerStatus((status) => {
+            console.log('Server status:', status);
+        });
+        
+        // Listen for server errors
+        window.electronAPI.onServerError((error) => {
+            showMessage('Server error: ' + error, 'error');
+            const statusElement = document.getElementById('server-status');
+            statusElement.className = 'server-status status-error';
+            statusElement.innerHTML = '<span class="status-indicator status-stopped"></span> Server error: ' + error;
+        });
+        
+        // Show message function
+        function showMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = type === 'success' ? 'success' : 'error';
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                messageElement.textContent = '';
+                messageElement.className = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
