@@ -1,49 +1,53 @@
 {
   "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/dist/(.*)",
-      "dest": "/public/dist/$1"
+      "source": "/webhook/booking-started",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/webhook/booking-started",
-      "dest": "/webhooks/server.js"
+      "source": "/webhook/booking-abandoned",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/webhook/booking-abandoned",
-      "dest": "/webhooks/server.js"
+      "source": "/webhook/reservation-confirmed",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/webhook/reservation-confirmed",
-      "dest": "/webhooks/server.js"
+      "source": "/webhook/guest-checked-in",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/webhook/guest-checked-in",
-      "dest": "/webhooks/server.js"
+      "source": "/health",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/health",
-      "dest": "/webhooks/server.js"
+      "source": "/settings",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/settings",
-      "dest": "/webhooks/server.js"
+      "source": "/api/settings",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/api/settings",
-      "dest": "/webhooks/server.js"
+      "source": "/api/regenerate-verify-token",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/settings.js",
-      "dest": "/public/settings.js"
+      "source": "/webhook/meta",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/settings.css",
-      "dest": "/public/settings.css"
+      "source": "/webhook/twilio",
+      "destination": "/webhooks/server.js"
     },
     {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/webhook/gupshup",
+      "destination": "/webhooks/server.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
