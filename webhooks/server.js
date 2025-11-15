@@ -22,6 +22,18 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
+// Generate a verification token if one doesn't exist and provider is Meta
+function generateVerifyToken() {
+  if (config.whatsapp.provider === 'whatsapp-cloud-api' && !config.whatsapp.verifyToken) {
+    const token = 'R3SORT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    config.whatsapp.verifyToken = token;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  }
+}
+
+// Generate verify token on startup if needed
+generateVerifyToken();
+
 // Root endpoint - Landing page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
@@ -42,6 +54,12 @@ app.post('/api/settings', (req, res) => {
   try {
     // Update config with new settings
     config = { ...config, ...req.body };
+    
+    // Generate verify token if provider is Meta and token doesn't exist
+    if (config.whatsapp.provider === 'whatsapp-cloud-api' && !config.whatsapp.verifyToken) {
+      const token = 'R3SORT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      config.whatsapp.verifyToken = token;
+    }
     
     // Save to config file
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
@@ -140,6 +158,92 @@ app.post('/webhook/guest-checked-in', (req, res) => {
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Meta WhatsApp Cloud API webhook endpoint
+app.get('/webhook/meta', (req, res) => {
+  // Verify the webhook
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+  
+  if (mode && token) {
+    if (mode === 'subscribe' && token === config.whatsapp.verifyToken) {
+      console.log('Meta webhook verified successfully');
+      res.status(200).send(challenge);
+    } else {
+      res.status(403).send('Verification failed');
+    }
+  } else {
+    res.status(400).send('Missing parameters');
+  }
+});
+
+app.post('/webhook/meta', (req, res) => {
+  try {
+    const eventData = req.body;
+    console.log('Received Meta webhook:', eventData);
+    
+    // Process the event (forward to existing flow engine)
+    // This would need to be implemented based on the specific Meta webhook format
+    // For now, we'll just log it and return success
+    
+    res.status(200).json({ message: 'Meta webhook received successfully' });
+  } catch (error) {
+    console.error('Error processing Meta webhook:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Twilio webhook endpoint
+app.post('/webhook/twilio', (req, res) => {
+  try {
+    const eventData = req.body;
+    console.log('Received Twilio webhook:', eventData);
+    
+    // Process the event (forward to existing flow engine)
+    // This would need to be implemented based on the specific Twilio webhook format
+    // For now, we'll just log it and return success
+    
+    res.status(200).json({ message: 'Twilio webhook received successfully' });
+  } catch (error) {
+    console.error('Error processing Twilio webhook:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Gupshup webhook endpoint
+app.post('/webhook/gupshup', (req, res) => {
+  try {
+    const eventData = req.body;
+    console.log('Received Gupshup webhook:', eventData);
+    
+    // Process the event (forward to existing flow engine)
+    // This would need to be implemented based on the specific Gupshup webhook format
+    // For now, we'll just log it and return success
+    
+    res.status(200).json({ message: 'Gupshup webhook received successfully' });
+  } catch (error) {
+    console.error('Error processing Gupshup webhook:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// API endpoint to regenerate Meta verify token
+app.post('/api/regenerate-verify-token', (req, res) => {
+  try {
+    if (config.whatsapp.provider === 'whatsapp-cloud-api') {
+      const token = 'R3SORT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      config.whatsapp.verifyToken = token;
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      res.json({ verifyToken: token, message: 'Verify token regenerated successfully!' });
+    } else {
+      res.status(400).json({ error: 'Verify token is only used for Meta WhatsApp Cloud API' });
+    }
+  } catch (error) {
+    console.error('Error regenerating verify token:', error);
+    res.status(500).json({ error: 'Failed to regenerate verify token' });
+  }
 });
 
 // Start the server only if not running as Electron child process

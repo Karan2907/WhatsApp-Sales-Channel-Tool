@@ -117,6 +117,13 @@
         .btn-warning:hover {
             background-color: #e0a800;
         }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
         .server-status {
             text-align: center;
             padding: 15px;
@@ -133,6 +140,92 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        .endpoint {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .endpoint-title {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .endpoint-url {
+            font-family: monospace;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .divider {
+            border-top: 1px solid #eee;
+            margin: 30px 0;
+        }
+        .webhook-section-title {
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .webhook-info {
+            background-color: #e9f7fe;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .webhook-info-title {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .webhook-url-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .webhook-url {
+            flex: 1;
+            font-family: monospace;
+            background-color: #e9ecef;
+            padding: 8px;
+            border-radius: 3px;
+            margin-right: 10px;
+            overflow-x: auto;
+        }
+        .token-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .token {
+            flex: 1;
+            font-family: monospace;
+            background-color: #e9ecef;
+            padding: 8px;
+            border-radius: 3px;
+            margin-right: 10px;
+            overflow-x: auto;
+        }
+        .instructions {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        .instructions-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .copy-button {
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -237,6 +330,8 @@
         
         <div class="tab-content" id="webhooks-tab">
             <h3>Webhook Endpoints</h3>
+            
+            <div class="webhook-section-title">Booking & Reservation Webhooks</div>
             <p>Configure your booking platform to send webhooks to these endpoints:</p>
             
             <div class="endpoint">
@@ -267,6 +362,13 @@
                 <div class="endpoint-title">Health Check</div>
                 <div class="endpoint-url" id="health-check-url">http://localhost:3000/health</div>
                 <div>Check if the service is running</div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="webhook-section-title">Provider Webhook Configuration</div>
+            <div id="provider-webhook-info">
+                <p>Select a WhatsApp provider in the Settings tab to see provider-specific webhook configuration.</p>
             </div>
         </div>
         
@@ -310,6 +412,11 @@
                 // Show corresponding content
                 const tabName = tab.getAttribute('data-tab');
                 document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                // If switching to webhooks tab, update provider webhook info
+                if (tabName === 'webhooks') {
+                    updateProviderWebhookInfo();
+                }
             });
         });
         
@@ -323,11 +430,12 @@
                 
                 // Update webhook URLs with the correct port
                 const port = appInfo.serverPort;
-                document.getElementById('booking-started-url').textContent = `http://localhost:${port}/webhook/booking-started`;
-                document.getElementById('booking-abandoned-url').textContent = `http://localhost:${port}/webhook/booking-abandoned`;
-                document.getElementById('reservation-confirmed-url').textContent = `http://localhost:${port}/webhook/reservation-confirmed`;
-                document.getElementById('guest-checked-in-url').textContent = `http://localhost:${port}/webhook/guest-checked-in`;
-                document.getElementById('health-check-url').textContent = `http://localhost:${port}/health`;
+                const baseUrl = `http://localhost:${port}`;
+                document.getElementById('booking-started-url').textContent = `${baseUrl}/webhook/booking-started`;
+                document.getElementById('booking-abandoned-url').textContent = `${baseUrl}/webhook/booking-abandoned`;
+                document.getElementById('reservation-confirmed-url').textContent = `${baseUrl}/webhook/reservation-confirmed`;
+                document.getElementById('guest-checked-in-url').textContent = `${baseUrl}/webhook/guest-checked-in`;
+                document.getElementById('health-check-url').textContent = `${baseUrl}/health`;
             } catch (error) {
                 console.error('Error loading app info:', error);
             }
@@ -367,6 +475,129 @@
                 messageElement.textContent = '';
                 messageElement.className = '';
             }, 5000);
+        }
+        
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('Copied to clipboard', 'success');
+            }).catch(err => {
+                showMessage('Failed to copy: ' + err, 'error');
+            });
+        }
+        
+        // Update provider webhook info based on selected provider
+        function updateProviderWebhookInfo() {
+            fetch('/api/settings')
+                .then(response => response.json())
+                .then(config => {
+                    const provider = config.whatsapp.provider;
+                    const providerWebhookInfo = document.getElementById('provider-webhook-info');
+                    const port = document.getElementById('server-port').textContent;
+                    const baseUrl = `http://localhost:${port}`;
+                    
+                    if (!provider) {
+                        providerWebhookInfo.innerHTML = '<p>Select a WhatsApp provider in the Settings tab to see provider-specific webhook configuration.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    switch (provider) {
+                        case 'whatsapp-cloud-api':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">WhatsApp Cloud API Webhook URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/meta</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/meta')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Verification Token</div>
+                                    <div class="token-container">
+                                        <div class="token">${config.whatsapp.verifyToken || 'Not generated yet'}</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${config.whatsapp.verifyToken || ''}')">Copy Token</button>
+                                        <button class="btn btn-warning copy-button" onclick="regenerateVerifyToken()" style="margin-left: 10px;">Regenerate</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy the Webhook URL and Verification Token above.</p>
+                                    <p>Open your Meta Developer Dashboard → WhatsApp → Configuration → Webhooks.</p>
+                                    <p>Paste the URL into <strong>Callback URL</strong> and the token into <strong>Verify token</strong>.</p>
+                                    <p>Click <strong>Verify and Save</strong>.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        case 'twilio':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Twilio WhatsApp Webhook URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/twilio</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/twilio')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy this URL and paste it into your Twilio Console.</p>
+                                    <p>Go to <strong>Messaging → Senders → WhatsApp Number → A MESSAGE COMES IN</strong> and set this URL as the webhook.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        case 'gupshup':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Gupshup WhatsApp Callback URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/gupshup</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/gupshup')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy this URL and paste it into your Gupshup Dashboard.</p>
+                                    <p>Go to <strong>App Settings → Inbound Message Callback</strong> and set this URL as the callback.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        default:
+                            html = '<p>Select a valid WhatsApp provider in the Settings tab.</p>';
+                    }
+                    
+                    providerWebhookInfo.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading provider webhook info:', error);
+                });
+        }
+        
+        // Regenerate verify token for Meta
+        function regenerateVerifyToken() {
+            fetch('/api/regenerate-verify-token', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.verifyToken) {
+                    showMessage(data.message, 'success');
+                    // Refresh the provider webhook info
+                    updateProviderWebhookInfo();
+                } else {
+                    showMessage(data.error || 'Failed to regenerate token', 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('Error regenerating token: ' + error.message, 'error');
+            });
         }
     </script>
 </body>
