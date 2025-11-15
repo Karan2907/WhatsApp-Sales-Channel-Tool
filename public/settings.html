@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Sales Channel Tool - Settings</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -223,4 +229,431 @@
             padding: 5px 10px;
             font-size: 14px;
         }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .provider-fields {
+            display: none;
+        }
+        .provider-fields.active {
+            display: block;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
     </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="app-name">WhatsApp Sales Channel Tool</h1>
+            <p id="app-version">Version: 1.0.0</p>
+            <div class="app-info">
+                <h3>Server Status</h3>
+                <div id="server-status" class="server-status status-ok">
+                    <span class="status-indicator status-running"></span> Server is running on port <span id="server-port">3000</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="settings">Settings</div>
+            <div class="tab" data-tab="webhooks">Webhooks</div>
+            <div class="tab" data-tab="about">About</div>
+        </div>
+        
+        <div class="tab-content active" id="settings-tab">
+            <h3>WhatsApp Configuration</h3>
+            <form id="settings-form">
+                <div class="form-group">
+                    <label for="provider">WhatsApp Provider:</label>
+                    <select id="provider" name="provider">
+                        <option value="">Select a provider</option>
+                        <option value="whatsapp-cloud-api">WhatsApp Cloud API (Meta)</option>
+                        <option value="twilio">Twilio</option>
+                        <option value="gupshup">Gupshup</option>
+                    </select>
+                </div>
+                
+                <!-- WhatsApp Cloud API Fields -->
+                <div id="whatsapp-cloud-api-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="accessToken">Access Token:</label>
+                        <input type="password" id="accessToken" name="accessToken" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumberId">Phone Number ID:</label>
+                        <input type="text" id="phoneNumberId" name="phoneNumberId" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="businessAccountId">Business Account ID (optional):</label>
+                        <input type="text" id="businessAccountId" name="businessAccountId" value="">
+                    </div>
+                </div>
+
+                <!-- Twilio Fields -->
+                <div id="twilio-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="accountSid">Account SID:</label>
+                        <input type="password" id="accountSid" name="accountSid" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="authToken">Auth Token:</label>
+                        <input type="password" id="authToken" name="authToken" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">WhatsApp Phone Number:</label>
+                        <input type="text" id="phoneNumber" name="phoneNumber" value="">
+                    </div>
+                </div>
+
+                <!-- Gupshup Fields -->
+                <div id="gupshup-fields" class="provider-fields">
+                    <div class="form-group">
+                        <label for="apiKey">API Key:</label>
+                        <input type="password" id="apiKey" name="apiKey" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="appName">App Name:</label>
+                        <input type="text" id="appName" name="appName" value="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandName">Brand Name:</label>
+                    <input type="text" id="brandName" name="brandName" value="">
+                </div>
+
+                <div class="form-group">
+                    <label for="brandTone">Brand Tone:</label>
+                    <select id="brandTone" name="brandTone">
+                        <option value="friendly">Friendly</option>
+                        <option value="premium">Premium</option>
+                        <option value="relaxed">Relaxed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
+        
+        <div class="tab-content" id="webhooks-tab">
+            <h3>Webhook Endpoints</h3>
+            
+            <div class="webhook-section-title">Booking & Reservation Webhooks</div>
+            <p>Configure your booking platform to send webhooks to these endpoints:</p>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Booking Started</div>
+                <div class="webhook-url-container">
+                    <div class="endpoint-url" id="booking-started-url">http://localhost:3000/webhook/booking-started</div>
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard(document.getElementById('booking-started-url').textContent)">Copy</button>
+                </div>
+                <div>Triggered when a guest starts a booking</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Booking Abandoned</div>
+                <div class="webhook-url-container">
+                    <div class="endpoint-url" id="booking-abandoned-url">http://localhost:3000/webhook/booking-abandoned</div>
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard(document.getElementById('booking-abandoned-url').textContent)">Copy</button>
+                </div>
+                <div>Triggered when a guest abandons a booking</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Reservation Confirmed</div>
+                <div class="webhook-url-container">
+                    <div class="endpoint-url" id="reservation-confirmed-url">http://localhost:3000/webhook/reservation-confirmed</div>
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard(document.getElementById('reservation-confirmed-url').textContent)">Copy</button>
+                </div>
+                <div>Triggered when a reservation is confirmed</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Guest Checked In</div>
+                <div class="webhook-url-container">
+                    <div class="endpoint-url" id="guest-checked-in-url">http://localhost:3000/webhook/guest-checked-in</div>
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard(document.getElementById('guest-checked-in-url').textContent)">Copy</button>
+                </div>
+                <div>Triggered when a guest checks in</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">Health Check</div>
+                <div class="webhook-url-container">
+                    <div class="endpoint-url" id="health-check-url">http://localhost:3000/health</div>
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard(document.getElementById('health-check-url').textContent)">Copy</button>
+                </div>
+                <div>Check if the service is running</div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="webhook-section-title">Provider Webhook Configuration</div>
+            <div id="provider-webhook-info">
+                <p>Select a WhatsApp provider in the Settings tab to see provider-specific webhook configuration.</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="about-tab">
+            <h3>About WhatsApp Sales Channel Tool</h3>
+            <p>This desktop application transforms WhatsApp into a powerful sales channel for your resort business through automated messaging flows.</p>
+            
+            <h4>Features</h4>
+            <ul>
+                <li>Welcome & Qualification Flow - Automated welcome message with intent qualification</li>
+                <li>Accommodation Showcase Flow - Curated suite and room recommendations based on guest interest</li>
+                <li>Booking Abandonment Recovery - Automated reminders for incomplete bookings</li>
+                <li>Reservation Management - Automatic booking confirmations and check-in updates</li>
+                <li>Post-Stay Engagement - Review requests and strategic upsell opportunities</li>
+                <li>Multi-Provider Support - Works with WhatsApp Business API, Twilio, and Gupshup</li>
+            </ul>
+            
+            <h4>Support</h4>
+            <p>For issues and questions, please refer to the documentation in the docs/ directory or contact support.</p>
+        </div>
+        
+        <div class="button-group">
+            <button id="restart-server" class="btn btn-warning">Restart Server</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script src="settings.js"></script>
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                // If switching to webhooks tab, update provider webhook info
+                if (tabName === 'webhooks') {
+                    updateProviderWebhookInfo();
+                }
+            });
+        });
+        
+        // Load app info when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const appInfo = await window.electronAPI.getAppInfo();
+                document.getElementById('app-name').textContent = appInfo.name;
+                document.getElementById('app-version').textContent = `Version: ${appInfo.version}`;
+                document.getElementById('server-port').textContent = appInfo.serverPort;
+                
+                // Update webhook URLs with the correct port
+                const port = appInfo.serverPort;
+                const baseUrl = `http://localhost:${port}`;
+                document.getElementById('booking-started-url').textContent = `${baseUrl}/webhook/booking-started`;
+                document.getElementById('booking-abandoned-url').textContent = `${baseUrl}/webhook/booking-abandoned`;
+                document.getElementById('reservation-confirmed-url').textContent = `${baseUrl}/webhook/reservation-confirmed`;
+                document.getElementById('guest-checked-in-url').textContent = `${baseUrl}/webhook/guest-checked-in`;
+                document.getElementById('health-check-url').textContent = `${baseUrl}/health`;
+            } catch (error) {
+                console.error('Error loading app info:', error);
+            }
+        });
+        
+        // Restart server button
+        document.getElementById('restart-server').addEventListener('click', async function() {
+            try {
+                const result = await window.electronAPI.restartServer();
+                showMessage(result.message, 'success');
+            } catch (error) {
+                showMessage('Error restarting server: ' + error.message, 'error');
+            }
+        });
+        
+        // Listen for server status updates
+        window.electronAPI.onServerStatus((status) => {
+            console.log('Server status:', status);
+        });
+        
+        // Listen for server errors
+        window.electronAPI.onServerError((error) => {
+            showMessage('Server error: ' + error, 'error');
+            const statusElement = document.getElementById('server-status');
+            statusElement.className = 'server-status status-error';
+            statusElement.innerHTML = '<span class="status-indicator status-stopped"></span> Server error: ' + error;
+        });
+        
+        // Show message function
+        function showMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = type === 'success' ? 'success' : 'error';
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                messageElement.textContent = '';
+                messageElement.className = '';
+            }, 5000);
+        }
+        
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('Copied to clipboard', 'success');
+            }).catch(err => {
+                showMessage('Failed to copy: ' + err, 'error');
+            });
+        }
+        
+        // Update provider webhook info based on selected provider
+        function updateProviderWebhookInfo() {
+            fetch('/api/settings')
+                .then(response => response.json())
+                .then(config => {
+                    const provider = config.whatsapp.provider;
+                    const providerWebhookInfo = document.getElementById('provider-webhook-info');
+                    const port = document.getElementById('server-port').textContent;
+                    const baseUrl = `http://localhost:${port}`;
+                    
+                    if (!provider) {
+                        providerWebhookInfo.innerHTML = '<p>Select a WhatsApp provider in the Settings tab to see provider-specific webhook configuration.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    switch (provider) {
+                        case 'whatsapp-cloud-api':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">WhatsApp Cloud API Webhook URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/meta</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/meta')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Verification Token</div>
+                                    <div class="token-container">
+                                        <div class="token">${config.whatsapp.verifyToken || 'Not generated yet'}</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${config.whatsapp.verifyToken || ''}')">Copy Token</button>
+                                        <button class="btn btn-warning copy-button" onclick="regenerateVerifyToken()" style="margin-left: 10px;">Regenerate</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy the Webhook URL and Verification Token above.</p>
+                                    <p>Open your Meta Developer Dashboard → WhatsApp → Configuration → Webhooks.</p>
+                                    <p>Paste the URL into <strong>Callback URL</strong> and the token into <strong>Verify token</strong>.</p>
+                                    <p>Click <strong>Verify and Save</strong>.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        case 'twilio':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Twilio WhatsApp Webhook URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/twilio</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/twilio')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy this URL and paste it into your Twilio Console.</p>
+                                    <p>Go to <strong>Messaging → Senders → WhatsApp Number → A MESSAGE COMES IN</strong> and set this URL as the webhook.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        case 'gupshup':
+                            html = `
+                                <div class="webhook-info">
+                                    <div class="webhook-info-title">Gupshup WhatsApp Callback URL</div>
+                                    <div class="webhook-url-container">
+                                        <div class="webhook-url">${baseUrl}/webhook/gupshup</div>
+                                        <button class="btn btn-secondary copy-button" onclick="copyToClipboard('${baseUrl}/webhook/gupshup')">Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions">
+                                    <div class="instructions-title">Setup Instructions</div>
+                                    <p>Copy this URL and paste it into your Gupshup Dashboard.</p>
+                                    <p>Go to <strong>App Settings → Inbound Message Callback</strong> and set this URL as the callback.</p>
+                                </div>
+                            `;
+                            break;
+                            
+                        default:
+                            html = '<p>Select a valid WhatsApp provider in the Settings tab.</p>';
+                    }
+                    
+                    providerWebhookInfo.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading provider webhook info:', error);
+                });
+        }
+        
+        // Regenerate verify token for Meta
+        function regenerateVerifyToken() {
+            fetch('/api/regenerate-verify-token', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.verifyToken) {
+                    showMessage(data.message, 'success');
+                    // Refresh the provider webhook info
+                    updateProviderWebhookInfo();
+                } else {
+                    showMessage(data.error || 'Failed to regenerate token', 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('Error regenerating token: ' + error.message, 'error');
+            });
+        }
+    </script>
+</body>
+</html>
