@@ -2,11 +2,11 @@
 
 ## What's Included
 
-1. **WhatsApp-Sales-Channel-Tool-Setup.exe** - Full installer with all dependencies
-   - Includes Node.js runtime
-   - Includes Electron framework
+1. **WhatsApp-Sales-Channel-Tool-Setup.exe** - Self-contained application package (renamed ZIP file)
+   - Includes all application files
+   - Requires Node.js v16+ to be installed separately
    - Includes all application dependencies
-   - No separate installations required
+   - Simple extraction and run installation
 
 2. **Installation Instructions**
    - Simply run the installer
