@@ -1,12 +1,12 @@
 @echo off
-echo Verifying WhatsApp Sales Channel Tool installer...
+echo Verifying WhatsApp Sales Channel Tool package...
 echo.
-echo Installer location: %~dp0release\WhatsApp-Sales-Channel-Tool-Setup.exe
-echo Installer size: %~z0 bytes
+echo Package location: %~dp0release\WhatsApp-Sales-Channel-Tool-Setup.exe
+echo Package size: %~z0 bytes
 echo.
 echo To install:
-echo 1. Double-click WhatsApp-Sales-Channel-Tool-Setup.exe
-echo 2. Follow the installation wizard
-echo 3. Launch the application from desktop shortcut
+echo 1. Install Node.js v16+ if not already installed
+echo 2. Extract WhatsApp-Sales-Channel-Tool-Setup.exe (it's actually a ZIP file)
+echo 3. Run start.bat to launch the application
 echo.
 pause
