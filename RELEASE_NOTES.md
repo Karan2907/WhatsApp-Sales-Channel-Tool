@@ -2,11 +2,11 @@
 
 ## What's Included
 
-1. **WhatsApp-Sales-Channel-Tool-Setup.exe** - Self-contained application package (renamed ZIP file)
+1. **WhatsApp-Sales-Channel-Tool-Setup.exe** - Full Windows installer
    - Includes all application files
+   - Creates desktop and start menu shortcuts
+   - Simple installation wizard
    - Requires Node.js v16+ to be installed separately
-   - Includes all application dependencies
-   - Simple extraction and run installation
 
 2. **Installation Instructions**
    - Simply run the installer
