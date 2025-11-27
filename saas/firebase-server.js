@@ -441,14 +441,19 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Firebase-based SaaS WhatsApp Sales Channel Tool server running on port ${PORT}`);
-  console.log(`Multi-tenant mode enabled with Firebase backend`);
-  
-  // Start periodic product fetching for all tenants
-  startPeriodicFetchingForAllTenants();
-});
+// Start the server (only when not running on Vercel)
+if (process.env.VERCEL !== '1' && require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Firebase-based SaaS WhatsApp Sales Channel Tool server running on port ${PORT}`);
+    console.log(`Multi-tenant mode enabled with Firebase backend`);
+    
+    // Start periodic product fetching for all tenants
+    startPeriodicFetchingForAllTenants();
+  });
+}
+
+// Export the app for Vercel
+module.exports = app;
 
 // Function to start periodic fetching for all tenants
 async function startPeriodicFetchingForAllTenants() {

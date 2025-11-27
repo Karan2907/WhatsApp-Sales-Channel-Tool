@@ -1,46 +1,15 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "saas/firebase-server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "saas/public/**",
-      "use": "@vercel/static"
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/saas/public/index.html"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/saas/firebase-server.js"
-    },
-    {
-      "src": "/myoperator/webhook/(.*)",
-      "dest": "/saas/firebase-server.js"
-    },
-    {
-      "src": "/twilio/webhook/(.*)",
-      "dest": "/saas/firebase-server.js"
-    },
-    {
-      "src": "/webhook/(.*)",
-      "dest": "/saas/firebase-server.js"
-    },
-    {
-      "src": "/(.*\\.(css|js|html|png|jpg|jpeg|gif|svg|ico))",
-      "dest": "/saas/public/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/saas/public/index.html"
+  "functions": {
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
   }
 }
