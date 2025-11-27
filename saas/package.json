@@ -1,0 +1,35 @@
+{
+  "name": "whatsapp-sales-channel-saas",
+  "version": "1.0.0",
+  "description": "SaaS version of WhatsApp Sales Channel Tool for resort owners",
+  "main": "server.js",
+  "scripts": {
+    "start": "node firebase-server.js",
+    "dev": "nodemon firebase-server.js",
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "sales-channel",
+    "resort",
+    "automation",
+    "booking",
+    "saas",
+    "multi-tenant"
+  ],
+  "author": "WhatsApp Sales Channel Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "jsonwebtoken": "^9.0.0",
+    "firebase": "^9.0.0",
+    "firebase-admin": "^11.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

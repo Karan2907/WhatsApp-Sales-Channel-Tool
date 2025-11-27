@@ -11,16 +11,26 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-// Load accommodation data
+// Load product fetcher
+const productFetcher = require('../api/productFetcher');
+
+// Load accommodation data (fallback)
+let accommodations = [];
 const accommodationsPath = path.join(__dirname, '../config/products.json');
-const accommodations = JSON.parse(fs.readFileSync(accommodationsPath, 'utf8'));
+if (fs.existsSync(accommodationsPath)) {
+  accommodations = JSON.parse(fs.readFileSync(accommodationsPath, 'utf8'));
+}
 
 /**
  * Handle booking started event
  * @param {Object} eventData - The booking started event data
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function handleCartStarted(eventData) {
+async function handleCartStarted(eventData, tenantConfig = null) {
   console.log('Booking started event received:', eventData);
+  
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
   
   // In a real implementation, you would:
   // 1. Store the booking information in a database
@@ -34,41 +44,64 @@ function handleCartStarted(eventData) {
   console.log(`Booking started for ${customerPhone} with ${bookingItems.length} items`);
   
   // Set timeout for booking abandonment reminder
-  setTimeout(() => {
-    sendBookingReminder1(customerPhone, bookingItems);
-  }, config.timings.cartReminder1Minutes * 60 * 1000); // Convert minutes to milliseconds
+  setTimeout(async () => {
+    await sendBookingReminder1(customerPhone, bookingItems, effectiveConfig);
+  }, effectiveConfig.timings.cartReminder1Minutes * 60 * 1000); // Convert minutes to milliseconds
 }
 
 /**
  * Handle booking abandoned event
  * @param {Object} eventData - The booking abandoned event data
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function handleCartAbandoned(eventData) {
+async function handleCartAbandoned(eventData, tenantConfig = null) {
   console.log('Booking abandoned event received:', eventData);
+  
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
   
   const customerPhone = eventData.customerPhone;
   const bookingItems = eventData.cartItems;
   
   // Send first reminder immediately
-  sendBookingReminder1(customerPhone, bookingItems);
+  await sendBookingReminder1(customerPhone, bookingItems, effectiveConfig);
   
   // Schedule second reminder
-  setTimeout(() => {
-    sendBookingReminder2(customerPhone, bookingItems);
-  }, config.timings.cartReminder2Hours * 60 * 60 * 1000); // Convert hours to milliseconds
+  setTimeout(async () => {
+    await sendBookingReminder2(customerPhone, bookingItems, effectiveConfig);
+  }, effectiveConfig.timings.cartReminder2Hours * 60 * 60 * 1000); // Convert hours to milliseconds
 }
 
 /**
  * Send first booking reminder
  * @param {string} customerPhone - Guest's WhatsApp phone number
  * @param {Array} bookingItems - Items in the booking
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function sendBookingReminder1(customerPhone, bookingItems) {
+async function sendBookingReminder1(customerPhone, bookingItems, tenantConfig = null) {
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
+  
   // In a real implementation, this would call the WhatsApp API
   console.log(`Sending Booking Reminder 1 to ${customerPhone}`);
   
   // Get first item name for personalization
   const firstItemName = bookingItems.length > 0 ? bookingItems[0].name : "your accommodations";
+  
+  // Fetch current products to get updated information
+  let currentProducts = accommodations;
+  try {
+    // Use tenant-specific product API config if available
+    const productApiConfig = tenantConfig?.productApi || config.productApi;
+    if (productApiConfig && productApiConfig.enabled && productApiConfig.url) {
+      currentProducts = await productFetcher.fetchProductsFromWebsite(productApiConfig);
+    } else {
+      currentProducts = await productFetcher.getProducts();
+    }
+    console.log(`Using ${currentProducts.length} current products for recommendation`);
+  } catch (error) {
+    console.error('Error fetching current products, using fallback:', error.message);
+  }
   
   const messageData = {
     messaging_product: "whatsapp",
@@ -83,7 +116,7 @@ function sendBookingReminder1(customerPhone, bookingItems) {
           parameters: [
             { type: "text", text: "Guest Name" }, // Would be personalized
             { type: "text", text: firstItemName },
-            { type: "text", text: config.brand.name },
+            { type: "text", text: effectiveConfig.brand.name },
             { type: "text", text: "https://yourresort.com/booking" } // Would be actual booking URL
           ]
         }
@@ -102,10 +135,29 @@ function sendBookingReminder1(customerPhone, bookingItems) {
  * Send second booking reminder
  * @param {string} customerPhone - Guest's WhatsApp phone number
  * @param {Array} bookingItems - Items in the booking
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function sendBookingReminder2(customerPhone, bookingItems) {
+async function sendBookingReminder2(customerPhone, bookingItems, tenantConfig = null) {
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
+  
   // In a real implementation, this would call the WhatsApp API
   console.log(`Sending Booking Reminder 2 to ${customerPhone}`);
+  
+  // Fetch current products to get updated information
+  let currentProducts = accommodations;
+  try {
+    // Use tenant-specific product API config if available
+    const productApiConfig = tenantConfig?.productApi || config.productApi;
+    if (productApiConfig && productApiConfig.enabled && productApiConfig.url) {
+      currentProducts = await productFetcher.fetchProductsFromWebsite(productApiConfig);
+    } else {
+      currentProducts = await productFetcher.getProducts();
+    }
+    console.log(`Using ${currentProducts.length} current products for recommendation`);
+  } catch (error) {
+    console.error('Error fetching current products, using fallback:', error.message);
+  }
   
   const messageData = {
     messaging_product: "whatsapp",
@@ -119,7 +171,7 @@ function sendBookingReminder2(customerPhone, bookingItems) {
           type: "body",
           parameters: [
             { type: "text", text: "Guest Name" }, // Would be personalized
-            { type: "text", text: config.brand.name }
+            { type: "text", text: effectiveConfig.brand.name }
           ]
         }
       ]
@@ -136,5 +188,7 @@ function sendBookingReminder2(customerPhone, bookingItems) {
 // Export functions
 module.exports = {
   handleCartStarted,
-  handleCartAbandoned
+  handleCartAbandoned,
+  sendBookingReminder1,
+  sendBookingReminder2
 };

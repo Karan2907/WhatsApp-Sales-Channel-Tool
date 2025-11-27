@@ -1,0 +1,72 @@
+{
+  "name": "whatsapp-sales-channel-tool",
+  "version": "1.0.0",
+  "description": "Desktop application for WhatsApp sales channel automation for resort owners",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node webhooks/server.js",
+    "setup": "node setup.js",
+    "demo": "node test/demo.js",
+    "test": "node test/test.js",
+    "dev": "nodemon webhooks/server.js",
+    "build": "node build.js",
+    "package": "node package-app.js",
+    "release": "node release.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "whatsapp",
+    "sales-channel",
+    "resort",
+    "automation",
+    "booking",
+    "desktop",
+    "electron"
+  ],
+  "author": "WhatsApp Sales Channel Team",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^24.0.0",
+    "electron-packager": "^17.1.2",
+    "electron-winstaller": "^5.4.0",
+    "jest": "^29.0.0",
+    "nodemon": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "build": {
+    "appId": "com.whatsapp.sales.channel.tool",
+    "productName": "WhatsApp Sales Channel Tool",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WhatsApp Sales Channel Tool",
+      "perMachine": true
+    },
+    "extraResources": [
+      {
+        "from": "nodejs/",
+        "to": "nodejs/",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}

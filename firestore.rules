@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Tenants collection - each document represents a tenant
+    match /tenants/{tenantId} {
+      // Allow tenant to read and update their own configuration
+      allow read, write, update: if request.auth != null && 
+        request.auth.token.tenantId == tenantId;
+      
+      // Allow creation of new tenant documents
+      allow create: if request.auth != null;
+    }
+    
+    // Products collection (if used)
+    match /products/{productId} {
+      // Allow read access for all authenticated users
+      allow read: if request.auth != null;
+      
+      // Only allow writes from admin/service accounts
+      allow write, update, delete: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Bookings collection (if used)
+    match /bookings/{bookingId} {
+      // Allow read/write access only for the tenant who owns the booking
+      allow read, write, update, delete: if request.auth != null && 
+        get(/databases/$(database)/documents/bookings/$(bookingId)).data.tenantId == request.auth.token.tenantId;
+    }
+    
+    // Global settings (if used)
+    match /settings/{settingId} {
+      // Read access for authenticated users
+      allow read: if request.auth != null;
+      
+      // Write access only for admins
+      allow write, update, delete: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+  }
+}

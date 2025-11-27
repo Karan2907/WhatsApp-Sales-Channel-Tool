@@ -364,6 +364,60 @@
                     </select>
                 </div>
 
+                <div class="divider"></div>
+                
+                <h3>Product API Configuration</h3>
+                
+                <div class="form-group">
+                    <label for="productApiEnabled">
+                        <input type="checkbox" id="productApiEnabled" name="productApiEnabled" style="width: auto; margin-right: 10px;"> 
+                        Enable Product API Integration
+                    </label>
+                </div>
+                
+                <div id="product-api-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="productApiUrl">Product API URL:</label>
+                        <input type="text" id="productApiUrl" name="productApiUrl" placeholder="https://yourwebsite.com/api/products">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productApiAuthType">Authentication Type:</label>
+                        <select id="productApiAuthType" name="productApiAuthType">
+                            <option value="none">None</option>
+                            <option value="bearer">Bearer Token</option>
+                            <option value="basic">Basic Auth</option>
+                            <option value="apikey">API Key</option>
+                        </select>
+                    </div>
+                    
+                    <div id="product-api-auth-fields">
+                        <div class="form-group" id="bearer-token-field" style="display: none;">
+                            <label for="productApiBearerToken">Bearer Token:</label>
+                            <input type="password" id="productApiBearerToken" name="productApiBearerToken">
+                        </div>
+                        
+                        <div class="form-group" id="basic-auth-fields" style="display: none;">
+                            <label for="productApiUsername">Username:</label>
+                            <input type="text" id="productApiUsername" name="productApiUsername">
+                            <label for="productApiPassword">Password:</label>
+                            <input type="password" id="productApiPassword" name="productApiPassword">
+                        </div>
+                        
+                        <div class="form-group" id="api-key-field" style="display: none;">
+                            <label for="productApiKeyHeader">API Key Header:</label>
+                            <input type="text" id="productApiKeyHeader" name="productApiKeyHeader" placeholder="X-API-Key">
+                            <label for="productApiKeyValue">API Key Value:</label>
+                            <input type="password" id="productApiKeyValue" name="productApiKeyValue">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productApiRefreshInterval">Refresh Interval (minutes):</label>
+                        <input type="number" id="productApiRefreshInterval" name="productApiRefreshInterval" value="60" min="1">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Save Settings</button>
             </form>
         </div>

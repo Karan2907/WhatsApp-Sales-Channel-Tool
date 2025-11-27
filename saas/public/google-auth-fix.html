@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Auth Fix Test</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Google Auth Fix Test</h1>
+        </div>
+        
+        <div id="auth-section">
+            <h2>Authentication</h2>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            
+            <div id="register-form">
+                <h3>Register New Account</h3>
+                <button id="google-register-btn" class="btn btn-primary">Register with Google</button>
+                <p>Or register with email and password:</p>
+                <button id="register-btn" class="btn btn-primary">Register with Email</button>
+            </div>
+            
+            <div id="login-form">
+                <h3>Login to Existing Account</h3>
+                <button id="login-btn" class="btn btn-success">Login</button>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3ZxhBq7tGPjirtrGYUMCDkc8YvNLjtY0",
+            authDomain: "whatsapp-sales-channel.firebaseapp.com",
+            projectId: "whatsapp-sales-channel",
+            storageBucket: "whatsapp-sales-channel.firebasestorage.app",
+            messagingSenderId: "111488607176",
+            appId: "1:111488607176:web:087e7bc306e46fea4d96fd",
+            measurementId: "G-W01FDCZ0G6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // DOM elements
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const messageDiv = document.getElementById('message');
+
+        // Show message function
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                messageDiv.textContent = '';
+                messageDiv.className = '';
+            }, 5000);
+        }
+
+        // Register with email and password
+        async function registerTenant() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!email || !password) {
+                showMessage('Please enter email and password', 'error');
+                return;
+            }
+            
+            try {
+                // Create user with email and password in Firebase
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                showMessage('Registration successful!', 'success');
+            } catch (error) {
+                showMessage('Error during registration: ' + error.message, 'error');
+            }
+        }
+
+        // Sign in with Google
+        async function signInWithGoogle() {
+            console.log('Google sign-in button clicked');
+            try {
+                console.log('Initializing Google sign-in');
+                const provider = new firebase.auth.GoogleAuthProvider();
+                console.log('Provider created:', provider);
+                const result = await auth.signInWithPopup(provider);
+                console.log('Sign-in result:', result);
+                const user = result.user;
+                
+                showMessage('Google sign-in successful!', 'success');
+            } catch (error) {
+                console.error('Error during Google sign-in:', error);
+                showMessage('Error during Google sign-in: ' + error.message, 'error');
+            }
+        }
+
+        // Login with email and password
+        async function loginTenant() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!email || !password) {
+                showMessage('Please enter email and password', 'error');
+                return;
+            }
+            
+            try {
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                showMessage('Login successful!', 'success');
+            } catch (error) {
+                showMessage('Error during login: ' + error.message, 'error');
+            }
+        }
+
+        // Set up event listeners after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners');
+            
+            // Get button elements
+            const googleRegisterBtn = document.getElementById('google-register-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const loginBtn = document.getElementById('login-btn');
+            
+            // Log button elements to console
+            console.log('Google register button:', googleRegisterBtn);
+            console.log('Email register button:', registerBtn);
+            console.log('Login button:', loginBtn);
+            
+            // Attach event listeners
+            if (googleRegisterBtn) {
+                googleRegisterBtn.addEventListener('click', signInWithGoogle);
+                console.log('Google register event listener attached');
+            } else {
+                console.error('Google register button not found');
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', registerTenant);
+                console.log('Email register event listener attached');
+            } else {
+                console.error('Email register button not found');
+            }
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', loginTenant);
+                console.log('Login event listener attached');
+            } else {
+                console.error('Login button not found');
+            }
+        });
+    </script>
+</body>
+</html>

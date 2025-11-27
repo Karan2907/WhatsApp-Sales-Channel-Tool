@@ -12,6 +12,30 @@ function handleProviderChange() {
     }
 }
 
+// Show/hide product API fields
+function handleProductApiToggle() {
+    const enabled = document.getElementById('productApiEnabled').checked;
+    document.getElementById('product-api-fields').style.display = enabled ? 'block' : 'none';
+}
+
+// Show/hide authentication fields based on selected type
+function handleAuthTypeChange() {
+    // Hide all auth fields
+    document.getElementById('bearer-token-field').style.display = 'none';
+    document.getElementById('basic-auth-fields').style.display = 'none';
+    document.getElementById('api-key-field').style.display = 'none';
+    
+    // Show selected auth fields
+    const authType = document.getElementById('productApiAuthType').value;
+    if (authType === 'bearer') {
+        document.getElementById('bearer-token-field').style.display = 'block';
+    } else if (authType === 'basic') {
+        document.getElementById('basic-auth-fields').style.display = 'block';
+    } else if (authType === 'apikey') {
+        document.getElementById('api-key-field').style.display = 'block';
+    }
+}
+
 // Handle form submission
 function handleFormSubmit(e) {
     e.preventDefault();
@@ -27,6 +51,17 @@ function handleFormSubmit(e) {
         brand: {
             name: formData.get('brandName'),
             tone: formData.get('brandTone')
+        },
+        productApi: {
+            enabled: document.getElementById('productApiEnabled').checked,
+            url: formData.get('productApiUrl'),
+            authType: formData.get('productApiAuthType'),
+            bearerToken: formData.get('productApiBearerToken'),
+            username: formData.get('productApiUsername'),
+            password: formData.get('productApiPassword'),
+            apiKeyHeader: formData.get('productApiKeyHeader'),
+            apiKeyValue: formData.get('productApiKeyValue'),
+            refreshInterval: parseInt(formData.get('productApiRefreshInterval')) || 60
         }
     };
     
@@ -94,6 +129,25 @@ function loadCurrentSettings() {
                 document.getElementById('appName').value = config.whatsapp.appName || '';
             }
             
+            // Product API fields
+            if (config.productApi) {
+                document.getElementById('productApiEnabled').checked = config.productApi.enabled || false;
+                document.getElementById('productApiUrl').value = config.productApi.url || '';
+                document.getElementById('productApiAuthType').value = config.productApi.authType || 'none';
+                document.getElementById('productApiBearerToken').value = config.productApi.bearerToken || '';
+                document.getElementById('productApiUsername').value = config.productApi.username || '';
+                document.getElementById('productApiPassword').value = config.productApi.password || '';
+                document.getElementById('productApiKeyHeader').value = config.productApi.apiKeyHeader || '';
+                document.getElementById('productApiKeyValue').value = config.productApi.apiKeyValue || '';
+                document.getElementById('productApiRefreshInterval').value = config.productApi.refreshInterval || 60;
+                
+                // Show/hide product API fields based on enabled state
+                handleProductApiToggle();
+                
+                // Show/hide auth fields based on selected type
+                handleAuthTypeChange();
+            }
+            
             // Show the appropriate provider fields
             if (config.whatsapp.provider) {
                 document.getElementById(config.whatsapp.provider + '-fields').style.display = 'block';
@@ -109,6 +163,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const providerSelect = document.getElementById('provider');
     if (providerSelect) {
         providerSelect.addEventListener('change', handleProviderChange);
+    }
+    
+    const productApiToggle = document.getElementById('productApiEnabled');
+    if (productApiToggle) {
+        productApiToggle.addEventListener('change', handleProductApiToggle);
+    }
+    
+    const authTypeSelect = document.getElementById('productApiAuthType');
+    if (authTypeSelect) {
+        authTypeSelect.addEventListener('change', handleAuthTypeChange);
     }
     
     const settingsForm = document.getElementById('settingsForm');

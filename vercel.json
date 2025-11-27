@@ -1,76 +1,46 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/webhook/booking-started",
-      "destination": "/webhooks/server.js"
+      "src": "saas/firebase-server.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/webhook/booking-abandoned",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/webhook/reservation-confirmed",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/webhook/guest-checked-in",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/health",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/settings",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/api/settings",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/api/regenerate-verify-token",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/webhook/meta",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/webhook/twilio",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/webhook/gupshup",
-      "destination": "/webhooks/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "saas/public/**",
+      "use": "@vercel/static"
     }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
+      "src": "/",
+      "dest": "/saas/public/index.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/saas/firebase-server.js"
+    },
+    {
+      "src": "/myoperator/webhook/(.*)",
+      "dest": "/saas/firebase-server.js"
+    },
+    {
+      "src": "/twilio/webhook/(.*)",
+      "dest": "/saas/firebase-server.js"
+    },
+    {
+      "src": "/webhook/(.*)",
+      "dest": "/saas/firebase-server.js"
+    },
+    {
+      "src": "/(.*\\.(css|js|html|png|jpg|jpeg|gif|svg|ico))",
+      "dest": "/saas/public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/saas/public/index.html"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

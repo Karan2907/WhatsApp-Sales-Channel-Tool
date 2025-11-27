@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Auth Test</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <h1>Firebase Authentication Test</h1>
+    <div id="user-info"></div>
+    <button id="google-signin">Sign in with Google</button>
+    <button id="signout">Sign Out</button>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3ZxhBq7tGPjirtrGYUMCDkc8YvNLjtY0",
+            authDomain: "whatsapp-sales-channel.firebaseapp.com",
+            projectId: "whatsapp-sales-channel",
+            storageBucket: "whatsapp-sales-channel.firebasestorage.app",
+            messagingSenderId: "111488607176",
+            appId: "1:111488607176:web:087e7bc306e46fea4d96fd",
+            measurementId: "G-W01FDCZ0G6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // DOM elements
+        const userInfoDiv = document.getElementById('user-info');
+        const googleSigninBtn = document.getElementById('google-signin');
+        const signoutBtn = document.getElementById('signout');
+
+        // Event listeners
+        googleSigninBtn.addEventListener('click', signInWithGoogle);
+        signoutBtn.addEventListener('click', signOut);
+
+        // Check auth state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                userInfoDiv.innerHTML = `<p>Signed in as: ${user.email}</p>`;
+            } else {
+                userInfoDiv.innerHTML = '<p>Not signed in</p>';
+            }
+        });
+
+        // Sign in with Google
+        async function signInWithGoogle() {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                console.log('Signed in:', result.user);
+            } catch (error) {
+                console.error('Sign in error:', error);
+                userInfoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        // Sign out
+        async function signOut() {
+            try {
+                await auth.signOut();
+                console.log('Signed out');
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

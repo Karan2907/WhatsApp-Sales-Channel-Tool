@@ -4,9 +4,9 @@
 
 1. **WhatsApp-Sales-Channel-Tool-Setup.exe** - Full Windows installer
    - Includes all application files
+   - Bundled Node.js runtime (no separate installation required)
    - Creates desktop and start menu shortcuts
    - Simple installation wizard
-   - Requires Node.js v16+ to be installed separately
 
 2. **Installation Instructions**
    - Simply run the installer

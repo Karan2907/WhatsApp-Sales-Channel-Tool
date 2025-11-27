@@ -22,6 +22,18 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
+// Load product fetcher
+const productFetcher = require('../api/productFetcher');
+
+// Start periodic product fetching
+productFetcher.startPeriodicFetching((error, products) => {
+  if (error) {
+    console.error('Error in periodic product fetching:', error.message);
+  } else {
+    console.log(`Periodic product fetching completed, loaded ${products.length} products`);
+  }
+});
+
 // Generate a verification token if one doesn't exist and provider is Meta
 function generateVerifyToken() {
   if (config.whatsapp.provider === 'whatsapp-cloud-api' && !config.whatsapp.verifyToken) {
@@ -72,7 +84,7 @@ app.post('/api/settings', (req, res) => {
 });
 
 // Webhook endpoint for booking started
-app.post('/webhook/booking-started', (req, res) => {
+app.post('/webhook/booking-started', async (req, res) => {
   try {
     const eventData = req.body;
     console.log('Received booking started webhook:', eventData);
@@ -83,7 +95,7 @@ app.post('/webhook/booking-started', (req, res) => {
     }
     
     // Process the event
-    cartHandler.handleCartStarted(eventData);
+    await cartHandler.handleCartStarted(eventData);
     
     res.status(200).json({ message: 'Booking started event processed' });
   } catch (error) {
@@ -93,7 +105,7 @@ app.post('/webhook/booking-started', (req, res) => {
 });
 
 // Webhook endpoint for booking abandoned
-app.post('/webhook/booking-abandoned', (req, res) => {
+app.post('/webhook/booking-abandoned', async (req, res) => {
   try {
     const eventData = req.body;
     console.log('Received booking abandoned webhook:', eventData);
@@ -104,7 +116,7 @@ app.post('/webhook/booking-abandoned', (req, res) => {
     }
     
     // Process the event
-    cartHandler.handleCartAbandoned(eventData);
+    await cartHandler.handleCartAbandoned(eventData);
     
     res.status(200).json({ message: 'Booking abandoned event processed' });
   } catch (error) {
@@ -114,7 +126,7 @@ app.post('/webhook/booking-abandoned', (req, res) => {
 });
 
 // Webhook endpoint for reservation confirmed
-app.post('/webhook/reservation-confirmed', (req, res) => {
+app.post('/webhook/reservation-confirmed', async (req, res) => {
   try {
     const eventData = req.body;
     console.log('Received reservation confirmed webhook:', eventData);
@@ -125,7 +137,7 @@ app.post('/webhook/reservation-confirmed', (req, res) => {
     }
     
     // Process the event
-    orderHandler.handleOrderPlaced(eventData);
+    await orderHandler.handleOrderPlaced(eventData);
     
     res.status(200).json({ message: 'Reservation confirmed event processed' });
   } catch (error) {
@@ -135,7 +147,7 @@ app.post('/webhook/reservation-confirmed', (req, res) => {
 });
 
 // Webhook endpoint for guest checked in
-app.post('/webhook/guest-checked-in', (req, res) => {
+app.post('/webhook/guest-checked-in', async (req, res) => {
   try {
     const eventData = req.body;
     console.log('Received guest checked in webhook:', eventData);
@@ -146,7 +158,7 @@ app.post('/webhook/guest-checked-in', (req, res) => {
     }
     
     // Process the event
-    orderHandler.handleOrderDelivered(eventData);
+    await orderHandler.handleOrderDelivered(eventData);
     
     res.status(200).json({ message: 'Guest checked in event processed' });
   } catch (error) {

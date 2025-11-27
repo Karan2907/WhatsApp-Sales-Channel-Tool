@@ -1,0 +1,43 @@
+{
+  "whatsapp": {
+    "provider": "",
+    "apiEndpoint": "https://graph.facebook.com/v20.0",
+    "accessToken": "",
+    "phoneNumberId": "",
+    "businessAccountId": "",
+    "verifyToken": ""
+  },
+  "webhook": {
+    "cartStartedEvent": "booking_started",
+    "cartAbandonedEvent": "booking_abandoned",
+    "orderPlacedEvent": "reservation_confirmed",
+    "orderDeliveredEvent": "guest_checked_in"
+  },
+  "timings": {
+    "cartReminder1Minutes": 45,
+    "cartReminder2Hours": 20,
+    "postPurchaseReviewDays": 2
+  },
+  "brand": {
+    "name": "Your Resort Name",
+    "tone": "friendly",
+    "avoidWords": []
+  },
+  "products": [],
+  "entryPoints": {
+    "whatsappButton": true,
+    "qrCode": true,
+    "clickToWhatsappAd": false
+  },
+  "productApi": {
+    "enabled": true,
+    "url": "http://localhost:3001/api/products",
+    "authType": "none",
+    "bearerToken": "",
+    "username": "",
+    "password": "",
+    "apiKeyHeader": "",
+    "apiKeyValue": "",
+    "refreshInterval": 1
+  }
+}

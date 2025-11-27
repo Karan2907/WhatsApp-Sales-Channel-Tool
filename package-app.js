@@ -41,7 +41,10 @@ const filesToCopy = [
   'public',
   'config',
   'test',
-  'docs'
+  'docs',
+  'install-as-service.bat',
+  'uninstall-service.bat',
+  'monitor-service.bat'
 ];
 
 console.log('Packaging application...');

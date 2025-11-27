@@ -11,46 +11,61 @@ const path = require('path');
 const configPath = path.join(__dirname, '../config/config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-// Load accommodation data
+// Load product fetcher
+const productFetcher = require('../api/productFetcher');
+
+// Load accommodation data (fallback)
+let accommodations = [];
 const accommodationsPath = path.join(__dirname, '../config/products.json');
-const accommodations = JSON.parse(fs.readFileSync(accommodationsPath, 'utf8'));
+if (fs.existsSync(accommodationsPath)) {
+  accommodations = JSON.parse(fs.readFileSync(accommodationsPath, 'utf8'));
+}
 
 /**
  * Handle reservation confirmed event
  * @param {Object} eventData - The reservation confirmed event data
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function handleOrderPlaced(eventData) {
+async function handleOrderPlaced(eventData, tenantConfig = null) {
   console.log('Reservation confirmed event received:', eventData);
+  
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
   
   const customerPhone = eventData.customerPhone;
   const reservationDetails = eventData.orderDetails;
   
   // Send reservation confirmation
-  sendReservationConfirmation(customerPhone, reservationDetails);
+  sendReservationConfirmation(customerPhone, reservationDetails, effectiveConfig);
 }
 
 /**
  * Handle guest checked in event
  * @param {Object} eventData - The guest checked in event data
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function handleOrderDelivered(eventData) {
+async function handleOrderDelivered(eventData, tenantConfig = null) {
   console.log('Guest checked in event received:', eventData);
+  
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
   
   const customerPhone = eventData.customerPhone;
   const reservationDetails = eventData.orderDetails;
   
   // Schedule review request
-  setTimeout(() => {
-    sendReviewRequest(customerPhone, reservationDetails);
-  }, config.timings.postPurchaseReviewDays * 24 * 60 * 60 * 1000); // Convert days to milliseconds
+  setTimeout(async () => {
+    await sendReviewRequest(customerPhone, reservationDetails, effectiveConfig);
+  }, effectiveConfig.timings.postPurchaseReviewDays * 24 * 60 * 60 * 1000); // Convert days to milliseconds
 }
 
 /**
  * Send reservation confirmation message
  * @param {string} customerPhone - Guest's WhatsApp phone number
  * @param {Object} reservationDetails - Reservation details
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function sendReservationConfirmation(customerPhone, reservationDetails) {
+function sendReservationConfirmation(customerPhone, reservationDetails, tenantConfig = null) {
   console.log(`Sending reservation confirmation to ${customerPhone}`);
   
   const messageData = {
@@ -84,9 +99,13 @@ function sendReservationConfirmation(customerPhone, reservationDetails) {
  * Send review request message
  * @param {string} customerPhone - Guest's WhatsApp phone number
  * @param {Object} reservationDetails - Reservation details
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function sendReviewRequest(customerPhone, reservationDetails) {
+async function sendReviewRequest(customerPhone, reservationDetails, tenantConfig = null) {
   console.log(`Sending review request to ${customerPhone}`);
+  
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
   
   // Select an accommodation from the reservation for review
   const accommodationForReview = reservationDetails.items[0]; // Simplified for POC
@@ -125,8 +144,8 @@ function sendReviewRequest(customerPhone, reservationDetails) {
   // sendWhatsAppMessage(messageData);
   
   // Also send upsell message
-  setTimeout(() => {
-    sendUpsellOffer(customerPhone, accommodationForReview);
+  setTimeout(async () => {
+    await sendUpsellOffer(customerPhone, accommodationForReview, effectiveConfig);
   }, 5000); // Small delay for demo purposes
 }
 
@@ -134,17 +153,36 @@ function sendReviewRequest(customerPhone, reservationDetails) {
  * Send upsell offer message
  * @param {string} customerPhone - Guest's WhatsApp phone number
  * @param {Object} purchasedAccommodation - The accommodation that was booked
+ * @param {Object} tenantConfig - Optional tenant configuration for SaaS version
  */
-function sendUpsellOffer(customerPhone, purchasedAccommodation) {
+async function sendUpsellOffer(customerPhone, purchasedAccommodation, tenantConfig = null) {
   console.log(`Sending upsell offer to ${customerPhone}`);
   
+  // Use tenant config if provided, otherwise use global config
+  const effectiveConfig = tenantConfig || config;
+  
+  // Fetch current products to get updated information
+  let currentProducts = accommodations;
+  try {
+    // Use tenant-specific product API config if available
+    const productApiConfig = tenantConfig?.productApi || config.productApi;
+    if (productApiConfig && productApiConfig.enabled && productApiConfig.url) {
+      currentProducts = await productFetcher.fetchProductsFromWebsite(productApiConfig);
+    } else {
+      currentProducts = await productFetcher.getProducts();
+    }
+    console.log(`Using ${currentProducts.length} current products for upsell`);
+  } catch (error) {
+    console.error('Error fetching current products, using fallback:', error.message);
+  }
+  
   // Find a complementary experience
-  const complementaryExperiences = accommodations.filter(a => 
+  const complementaryExperiences = currentProducts.filter(a => 
     a.category === 'experience'
   );
   
   const upsellExperience = complementaryExperiences.length > 0 ? 
-    complementaryExperiences[0] : accommodations[0];
+    complementaryExperiences[0] : currentProducts[0];
   
   const messageData = {
     messaging_product: "whatsapp",
@@ -185,5 +223,8 @@ function sendUpsellOffer(customerPhone, purchasedAccommodation) {
 // Export functions
 module.exports = {
   handleOrderPlaced,
-  handleOrderDelivered
+  handleOrderDelivered,
+  sendReservationConfirmation,
+  sendReviewRequest,
+  sendUpsellOffer
 };
