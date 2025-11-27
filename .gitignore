@@ -7,8 +7,11 @@ saas/node_modules/
 .env.local
 .env.production
 
-# Firebase Admin SDK private key (already committed, but good practice)
-# whatsapp-sales-channel-firebase-adminsdk-*.json
+# Firebase Admin SDK private key - NEVER commit this!
+whatsapp-sales-channel-firebase-adminsdk-*.json
+
+# Node.js runtime (too large for GitHub)
+nodejs/
 
 # Build outputs
 dist/
